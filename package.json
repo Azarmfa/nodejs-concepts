@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "array": "^0.4.3",
+    "lodash": "^4.17.21"
+  }
+}
