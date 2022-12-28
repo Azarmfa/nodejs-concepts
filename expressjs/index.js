@@ -1,63 +1,39 @@
-const express = require('express');
-const path = require('path');
-const app = express();
-var cars = require('./carlist/cars');
-
-var cookieParser = require('cookie-parser');
-
-
-var bikes = require('./bike');
-const bodyParser = require('body-parser');
-
+var express = require('express');
+var app = express();
+var path = require('path');
+var fs = require('fs');
+var multer = require('multer');
+var formData = multer();
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(formData.array());
+var cars = require('./cars');
+var port = process.env.port || "9000";
 
+app.use(express.static(path.join(__dirname,"assets")));
 app.use((req,res,next)=>{
-    console.log('this is universal middleware');
+    console.log('middleware');
     next();
 });
-
-app.use("/users",(req,res,next)=>{
-    console.log('this is users middleware');
-    next();
-});
-// app.use(bodyParser.)
-
-app.use(cookieParser());
-
-app.use("/asset",express.static('./assets'));
-
-app.use('/cars-section',cars);
-
-app.use('/bikes',bikes);
-
 app.get('/',function(req,res){
-    // res.json({
-    //     username:'azar',
-    //     Name:'Azarudeen',
-    //     country:'India',
-    //     State:'Tamil Nadu'
-    // })
-
-    res.sendFile(path.join(__dirname,'statichtml','homepage.html'));
-
-    // res.send('This is home page using send')
-})
-
-app.get('/users',(req,res)=>{
-    res.send('This is users page');
-})
-
-app.post('/create-user',(req,res)=>{
-    console.log(req.body);
-    res.status(200).send(
-        `username created ${req.body.username}`
-    );
+    console.log('hit');
+    // res.send('hello home page');
+    res.sendFile(path.join(__dirname,"/index.html"));
 });
 
-app.get("*",function(req,res){
-    res.send("No mataching path found");
+app.use('/cars',cars);
+
+app.get('/hello',function(req,res){
+    console.log('hello path');
+    res.send('this is hello path');
+});
+
+app.post('/hello',function(req,res){
+    console.log('hello post',req.body.username);
+    res.status(300).json({username:req.body.username})
 })
 
-app.listen(4000,()=>{
-    console.log(`Server starts at http://localhost:4000`);
+app.listen(port,()=>{
+    console.log('application created with port 9000');
 });
